@@ -9,10 +9,13 @@ const port = process.env.PORT
 
 const DATABASE_URL = process.env.DATABASE_URL 
 
+//Databse Connection
 connectDb(DATABASE_URL)
 
+//Cors Policy
 app.use(cors())
 
+//Json
 app.use(express.json())
 
 app.listen(port, () => {
