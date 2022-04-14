@@ -35,6 +35,30 @@ class UserController {
             }
         }
     } 
+
+    static userLogin = async (req,res) => {
+        try {
+            const {email,password} =req.body
+            if(email&&password) {
+                const user = await UserModel.findOne({email:email});
+                if(user!=null) {
+                    const isMatch = await bycrypt.compare(password, user.password)
+                    if(user.email === email && isMatch) {
+                        res.send({"status":"success","message":"Login success"})
+                    } else {
+                        res.send({"status":"failed","message":"Your email or password is not valid"})
+                    }
+
+                } else {
+                    res.send({"status":"failed","message":"You are not a Registered user"})
+                }
+            } else {
+                res.send({"status":"failed", "message":"Alll fields are required"})
+            }
+        } catch (error) {
+            res.send({"status":"failed","message":"Unable to login"})
+        }
+    }
 }
 
 export default UserController

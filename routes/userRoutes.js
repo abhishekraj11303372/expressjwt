@@ -4,6 +4,7 @@ import UserController from '../controllers/userController.js';
 
 //public routes
 router.post('/register',UserController.userRegisteration)
+router.post('/login',UserController.userLogin)
 
 //protected routes
 
