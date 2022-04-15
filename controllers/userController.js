@@ -52,7 +52,9 @@ class UserController {
                 if(user!=null) {
                     const isMatch = await bycrypt.compare(password, user.password)
                     if(user.email === email && isMatch) {
-                        res.send({"status":"success","message":"Login success"})
+                        //JWT token
+                        const token = jwt.sign({userID: user._id},process.env.JWT_SECRET_KEY, {expiresIn:'3d'})
+                        res.send({"status":"success","message":"Login success","token":token})
                     } else {
                         res.send({"status":"failed","message":"Your email or password is not valid"})
                     }
