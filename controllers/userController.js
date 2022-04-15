@@ -23,8 +23,16 @@ class UserController {
                     })
 
                     await doc.save()
-                    res.status(201).send({"status":"success", "message":"Registeraiton Success"})
+
+                    const saved_user =  await UserModel.findOne({email:email})
+
+                    //JWT token
+                    const token = jwt.sign({userID: saved_user._id},process.env.JWT_SECRET_KEY, {expiresIn:'3d'})
+
+                    res.status(201).send({"status":"success", "message":"Registeraiton Success","token": token})
+
                     } catch (error) {
+                        console.log("error")
                         res.send({"status":"failed", "message":"Unable to register"})
                     }
                 } else {
