@@ -52,7 +52,9 @@ class UserController {
                 if(user!=null) {
                     const isMatch = await bycrypt.compare(password, user.password)
                     if(user.email === email && isMatch) {
-                        res.send({"status":"success","message":"Login success"})
+                        //JWT token
+                        const token = jwt.sign({userID: user._id},process.env.JWT_SECRET_KEY, {expiresIn:'3d'})
+                        res.send({"status":"success","message":"Login success","token":token})
                     } else {
                         res.send({"status":"failed","message":"Your email or password is not valid"})
                     }
@@ -65,6 +67,21 @@ class UserController {
             }
         } catch (error) {
             res.send({"status":"failed","message":"Unable to login"})
+        }
+    }
+
+    static changePassword = async(req,res) => {
+        const {password,confirm_password} = req.body
+        if(password && confirm_password) {
+            if(password!==confirm_password) {
+                res.send({"status":"failed", "message":"Password does not match"})
+            } else {
+                const salt = await bycrypt.genSalt(10)
+                const hashPassword = await bycrypt.hash(password,salt)
+                res.send({"status":"failed", "message":"Password does not match"})
+            }
+        } else {
+            res.send({"status":"failed", "message":"Alll fields are required"})
         }
     }
 }
