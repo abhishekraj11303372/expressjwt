@@ -77,8 +77,9 @@ class UserController {
                 res.send({"status":"failed", "message":"Password does not match"})
             } else {
                 const salt = await bycrypt.genSalt(10)
-                const hashPassword = await bycrypt.hash(password,salt)
-                res.send({"status":"failed", "message":"Password does not match"})
+                const newHashPassword = await bycrypt.hash(password,salt)
+                await UserModel.findByIdAndUpdate(req.user._id,{$set:{password:newHashPassword}})
+                res.send({"status":"success", "message":"Password changed successfully"})
             }
         } else {
             res.send({"status":"failed", "message":"Alll fields are required"})
