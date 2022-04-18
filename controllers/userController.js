@@ -85,6 +85,49 @@ class UserController {
             res.send({"status":"failed", "message":"Alll fields are required"})
         }
     }
+
+    static loggedUser = async (req,res) => {
+        res.send({"user":req.user})
+    }
+
+    static resetUserPasswordEmail = async (req,res) => {
+        const {email} = req.body
+        if (email) {
+            const user = await UserModel.findOne({email:email})
+            
+            if(user) {
+                const secret = user._id + process.env.JWT_SECRET_KEY
+                const token = jwt.sign({userID:user._id},secret, {expiresIn:'15m'})
+                const link =`http://127.0.0.1:3000/api/user/reset/${user.id}/${token}`
+                console.log(link)
+                res.send({"status":"success", "message":"Password reset success and email is sent. Please check your email"})
+            } else {
+                res.send({"status": "failed", "message":"Email does not exist"})
+            }
+        } else {
+            res.send({"status": "failed", "message":"Email is required"})
+        }
+    }
+
+    static userPasswordReset = async (req,res) => {
+        const {password,confirm_password} =req.body
+        const {id,token} = req.params
+        const user = await UserModel.findById(id)
+        const newToken = user._id + process.env.JWT_SECRET_KEY
+        try {
+            jwt.verify(token,newToken)
+
+            if(password && confirm_password) {
+                const salt = await bycrypt.genSalt(10)
+                const newHashPassword = await bycrypt.hash(password, salt)
+                await UserModel.findByIdAndUpdate(req.user._id, {$set: {password: newHashPassword}})
+                res.send({"status":"success", "message":"Password reset successfully"})
+            }
+        } catch (error) {
+            console.log(error)
+            res.send({"status":"failed","message":"invalid token"})
+        }
+    }
 }
 
 export default UserController
