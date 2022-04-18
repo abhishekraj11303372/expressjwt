@@ -118,10 +118,16 @@ class UserController {
             jwt.verify(token,newToken)
 
             if(password && confirm_password) {
+                if(password!==confirm_password) {
+                    res.send({"status":"failed","message":"passwords doesnot match"})
+                } else {
                 const salt = await bycrypt.genSalt(10)
                 const newHashPassword = await bycrypt.hash(password, salt)
-                await UserModel.findByIdAndUpdate(req.user._id, {$set: {password: newHashPassword}})
+                await UserModel.findByIdAndUpdate(user._id, {$set: {password: newHashPassword}})
                 res.send({"status":"success", "message":"Password reset successfully"})
+                }
+            } else {
+                res.send({"status":"failed","message":"All fields are required"})
             }
         } catch (error) {
             console.log(error)
