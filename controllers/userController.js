@@ -106,7 +106,7 @@ class UserController {
                     from: process.env.EMAIL_FROM,
                     to: user.email,
                     subject: "ARShop - password link",
-                    hrml: `<a href=${link}>Click Here</a> Reset your password`
+                    html: `<a href=${link}>Click Here</a> Reset your password`
                 })
                 res.send({"status":"success", "message":"Password reset success and email is sent. Please check your email","info":info})
             } else {
