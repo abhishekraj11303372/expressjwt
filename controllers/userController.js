@@ -1,6 +1,7 @@
 import UserModel from "../models/User.js";
 import bycrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import transporter from "../config/emailConfig.js";
 
 class UserController {
     static userRegisteration = async(req,res) => {
@@ -100,7 +101,14 @@ class UserController {
                 const token = jwt.sign({userID:user._id},secret, {expiresIn:'15m'})
                 const link =`http://127.0.0.1:3000/api/user/reset/${user.id}/${token}`
                 console.log(link)
-                res.send({"status":"success", "message":"Password reset success and email is sent. Please check your email"})
+                //send email
+                let info = await transporter.sendMail({
+                    from: process.env.EMAIL_FROM,
+                    to: user.email,
+                    subject: "ARShop - password link",
+                    hrml: `<a href=${link}>Click Here</a> Reset your password`
+                })
+                res.send({"status":"success", "message":"Password reset success and email is sent. Please check your email","info":info})
             } else {
                 res.send({"status": "failed", "message":"Email does not exist"})
             }
