@@ -15,11 +15,11 @@ class UserController {
                 if(password===confirm_password) {
                     try {
                         const salt = await bycrypt.genSalt(10)
-                        const hashPasswordd = await bycrypt.hash(password,salt)
+                        const hashPassword = await bycrypt.hash(password,salt)
                         const doc = new UserModel({
                         name: name,
                         email:email,
-                        password:hashPasswordd,
+                        password:hashPassword,
                         tc:tc
                     })
 
@@ -40,7 +40,7 @@ class UserController {
                     res.send({"status":"failed", "message":"Password does not match"})
                 }
             } else {
-                res.send({"status":"failed", "message":"Alll fields are required"})
+                res.send({"status":"failed", "message":"1 All fields are required"})
             }
         }
     } 
