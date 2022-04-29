@@ -8,12 +8,14 @@ var checkUserAuth = async(req,res,next) => {
         try {
             token =authorization.split(' ')[1]
 
-            //verify token
+            if(token !== 'undefined') {
+                //verify token
             const {userID} = jwt.verify(token, process.env.JWT_SECRET_KEY)
             
             //get user from token 
             req.user = await UserModel.findById(userID).select('-password')
             next()
+            }
 
         } catch (error) {
             console.log(error)
